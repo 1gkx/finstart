@@ -12,6 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - "../data:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 6s
+      timeout: 3s
+      retries: 5
 
   finstar:
     container_name: finstar
@@ -22,4 +27,7 @@ services:
     ports:
       - "${PORT}:${PORT}"
     volumes:
-      - "./migrations:/migrations"
+      - "../migrations:/migrations"
+    depends_on:
+      postgres:
+        condition: service_healthy

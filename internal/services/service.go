@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/1gkx/finstar/internal/repositories"
 	"github.com/1gkx/finstar/internal/repositories/models"
@@ -34,6 +35,11 @@ func (s *service) IncreaseBalance(ctx context.Context, req models.IncreaseBanace
 
 	s.log.Log("event", "increase_balance", "user_id", req.GetUserId())
 
+	if req.GetAmount() <= 0 {
+		s.log.Log("event", "error", "desc", "amount cannot be negative or zero")
+		return nil, fmt.Errorf("amount cannot be negative or zero")
+	}
+
 	userAccount, err := s.repo.FindAccount(ctx, req.GetUserId())
 	if err != nil {
 		s.log.Log("event", "error", "desc", err)
@@ -46,6 +52,16 @@ func (s *service) IncreaseBalance(ctx context.Context, req models.IncreaseBanace
 func (s *service) TransferMoney(ctx context.Context, req models.TransferMoneyRequest) error {
 
 	s.log.Log("event", "transfer_money", "sender_id", req.GetSenderId())
+
+	if req.GetAmount() <= 0 {
+		s.log.Log("event", "error", "desc", "amount cannot be negative or zero")
+		return fmt.Errorf("amount cannot be negative or zero")
+	}
+
+	if req.GetSenderId() == req.GetReseiverId() {
+		s.log.Log("event", "error", "desc", "transfer money yourself denied")
+		return fmt.Errorf("transfer money yourself denied")
+	}
 
 	senderAcc, err := s.repo.FindAccount(ctx, req.GetSenderId())
 	if err != nil {

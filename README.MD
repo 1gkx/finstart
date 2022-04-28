@@ -17,7 +17,9 @@
 
 ### USE PROJECT
 ```
-    Build containers: make up
+    Build containers: make build
+    Run containers: make up
+    Stop containers: make down
 
     [GET] http://localhost:3000/api/v1/get_all
     [POST] http://localhost:3000/api/v1/increase
